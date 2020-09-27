@@ -2,9 +2,11 @@
 package com.resourcefulbees.resourcefulbees.tileentity;
 
 
+import com.resourcefulbees.resourcefulbees.ResourcefulBees;
 import com.resourcefulbees.resourcefulbees.api.ICustomBee;
 import com.resourcefulbees.resourcefulbees.block.TieredBeehiveBlock;
 import com.resourcefulbees.resourcefulbees.config.Config;
+import com.resourcefulbees.resourcefulbees.entity.passive.ResourcefulBee;
 import com.resourcefulbees.resourcefulbees.lib.BeeConstants;
 import com.resourcefulbees.resourcefulbees.lib.NBTConstants;
 import com.resourcefulbees.resourcefulbees.registry.RegistryHandler;
@@ -115,7 +117,7 @@ public class TieredBeehiveTileEntity extends BeehiveTileEntity {
               int i = getHoneyLevel(state);
               if (i < 5) {
                 if (entity instanceof ICustomBee && ((ICustomBee)entity).getBeeData().hasHoneycomb()) {
-                  honeycomb = new ItemStack(((ICustomBee)entity).getBeeData().getCombRegistryObject().get());
+                  honeycomb = ((ICustomBee)entity).getBeeData().getCombStack();
                 } else if (!(entity instanceof ICustomBee)) {
                   honeycomb = new ItemStack(Items.HONEYCOMB);
                 }
@@ -206,7 +208,7 @@ public class TieredBeehiveTileEntity extends BeehiveTileEntity {
   }
 
   public boolean hasCombs(){
-    return honeycombs.size() > 0;
+    return numberOfCombs() > 0;
   }
 
   public int numberOfCombs() {
@@ -260,6 +262,7 @@ public class TieredBeehiveTileEntity extends BeehiveTileEntity {
     for (int i = 0; i < numberOfCombs(); i++) {
       CompoundNBT itemTag = new CompoundNBT();
       itemTag.putInt(String.valueOf(i), i);
+      ResourcefulBees.LOGGER.info("add comb stack to tag  " + honeycombs.get(i));
       honeycombs.get(i).write(itemTag);
       nbtTagList.add(itemTag);
     }
@@ -273,6 +276,7 @@ public class TieredBeehiveTileEntity extends BeehiveTileEntity {
     Stack<ItemStack> honeycombs = new Stack<>();
     ListNBT tagList = nbt.getList(NBTConstants.NBT_HONEYCOMBS_TE, Constants.NBT.TAG_COMPOUND);
     for (int i = 0; i < tagList.size(); i++) {
+      ResourcefulBees.LOGGER.info("read comb stack from tag  " + tagList.getCompound(i));
       honeycombs.push(ItemStack.read(tagList.getCompound(i)));
     }
     return honeycombs;

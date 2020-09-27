@@ -1,5 +1,6 @@
 package com.resourcefulbees.resourcefulbees.block;
 
+import com.resourcefulbees.resourcefulbees.ResourcefulBees;
 import com.resourcefulbees.resourcefulbees.config.Config;
 import com.resourcefulbees.resourcefulbees.registry.RegistryHandler;
 import com.resourcefulbees.resourcefulbees.tileentity.TieredBeehiveTileEntity;
@@ -94,6 +95,7 @@ public class TieredBeehiveBlock extends BeehiveBlock {
 
       if (isShear || isScraper) {
         world.playSound(player, player.getX(), player.getY(), player.getZ(), SoundEvents.BLOCK_BEEHIVE_SHEAR, SoundCategory.NEUTRAL, 1.0F, 1.0F);
+        ResourcefulBees.LOGGER.info("using tool on hive " + isScraper);
         dropResourceHoneycomb(world, pos, isScraper);
         itemstack.damageItem(1, player, player1 -> player1.sendBreakAnimation(handIn));
         TieredBeehiveTileEntity hive = (TieredBeehiveTileEntity)world.getTileEntity(pos);
@@ -182,11 +184,14 @@ public class TieredBeehiveBlock extends BeehiveBlock {
   }
 
   public void dropResourceHoneycomb(World world, BlockPos pos, boolean useScraper) {
+    ResourcefulBees.LOGGER.info("dropResourceHoneycomb " + useScraper);
     TileEntity blockEntity = world.getTileEntity(pos);
     if (blockEntity instanceof TieredBeehiveTileEntity) {
       TieredBeehiveTileEntity hive = (TieredBeehiveTileEntity)blockEntity;
+      ResourcefulBees.LOGGER.info("hasCombs " + hive.hasCombs());
       while (hive.hasCombs()) {
         ItemStack comb = hive.getResourceHoneycomb();
+        ResourcefulBees.LOGGER.info("Drop comb " + comb + " - " + comb.getTag());
         spawnAsEntity(world, pos, comb);
         if (useScraper) break;
       }
